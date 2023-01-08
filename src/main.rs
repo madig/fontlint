@@ -41,13 +41,14 @@ fn check_win_ascent_and_descent(font: &FontRef) -> Vec<Diagnostic> {
     };
 
     let win_ascent: i32 = os2.us_win_ascent().into();
-    let head_y_max: i32 = head.y_max().into();
-    let win_ascent_max = head_y_max.checked_mul(2).unwrap();
-    if win_ascent < head_y_max || win_ascent > win_ascent_max {
+    let win_ascent_min: i32 = head.y_max().into();
+    let win_ascent_max = win_ascent_min.checked_mul(2).unwrap();
+    let win_ascent_range = win_ascent_min..=win_ascent_max;
+    if !win_ascent_range.contains(&win_ascent) {
         diagnostics.push(Diagnostic {
             level: Level::Fail,
             message: Box::new(WinMetricsError::WinAscentOutsideExpecation {
-                range: head_y_max..=win_ascent_max,
+                range: win_ascent_range,
                 got: win_ascent,
             }),
         })
@@ -55,13 +56,14 @@ fn check_win_ascent_and_descent(font: &FontRef) -> Vec<Diagnostic> {
 
     let win_descent: i32 = os2.us_win_descent().into();
     let head_y_min: i32 = head.y_min().into();
-    let head_y_min_abs = head_y_min.abs();
-    let win_descent_max = head_y_min_abs.checked_mul(2).unwrap();
-    if win_descent < head_y_min_abs || win_descent > win_descent_max {
+    let win_descent_min = head_y_min.abs();
+    let win_descent_max = win_descent_min.checked_mul(2).unwrap();
+    let win_descent_range = win_descent_min..=win_descent_max;
+    if !win_descent_range.contains(&win_descent) {
         diagnostics.push(Diagnostic {
             level: Level::Fail,
             message: Box::new(WinMetricsError::WinDescentOutsideExpecation {
-                range: head_y_min_abs..=win_descent_max,
+                range: win_descent_range,
                 got: win_descent,
             }),
         })
