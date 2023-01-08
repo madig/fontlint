@@ -55,8 +55,7 @@ fn check_win_ascent_and_descent(font: &FontRef) -> Vec<Diagnostic> {
     }
 
     let win_descent: i32 = os2.us_win_descent().into();
-    let head_y_min: i32 = head.y_min().into();
-    let win_descent_min = head_y_min.abs();
+    let win_descent_min: i32 = head.y_min().abs().into();
     let win_descent_max = win_descent_min.checked_mul(2).unwrap();
     let win_descent_range = win_descent_min..=win_descent_max;
     if !win_descent_range.contains(&win_descent) {
